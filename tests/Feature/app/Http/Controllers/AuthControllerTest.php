@@ -23,7 +23,7 @@ class AuthControllerTest extends TestCase
         ];
 
         $request = $this->post(route('authenticate', ['provider' => 'datebayo']), $payload);
-        
+
         $request->assertResponseStatus(422);
         $request->seeJson(['errors' => ['main' => 'Provider not found']]);
     }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Retailer;
 use \App\Models\User;
 
 return [
@@ -42,6 +43,10 @@ return [
             'driver' => 'passport',
             'provider' => 'users',
         ],
+        'retailer' => [
+            'driver' => 'passport',
+            'provider' => 'retailer',
+        ],
     ],
 
     /*
@@ -65,7 +70,11 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => User::class
-        ]
+        ],
+        'retailer' => [
+            'driver' => 'eloquent',
+            'provider' => Retailer::class,
+        ],
     ],
 
     /*

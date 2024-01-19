@@ -2,11 +2,12 @@
 
 namespace App\Repositories;
 
-use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use PHPUnit\Framework\InvalidDataProviderException;
-use Illuminate\Support\Facades\Hash;
+use App\Models\Retailer;
+use App\Models\User;
 
 class AuthRepository
 {
@@ -37,6 +38,8 @@ class AuthRepository
     {
         if ($provider == "user") {
             return new User();
+        } else if ($provider == "retailer") {
+            return new Retailer();
         } else {
             throw new InvalidDataProviderException("Provider not found");
         }

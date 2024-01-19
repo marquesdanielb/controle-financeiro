@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Laravel\Lumen\Auth\Authorizable;
 use Laravel\Passport\HasApiTokens;
 
-class User extends Model implements AuthenticatableContract, AuthorizableContract
+class Retailer extends Model implements AuthenticatableContract, AuthorizableContract
 {
     use Authenticatable, Authorizable, HasFactory, HasApiTokens;
 
@@ -38,6 +38,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     public function wallet(): HasOne
     {
-        return $this->hasOne(Wallet::class);
+        return $this->hasOne(Wallet::class, 'user_id');
     }
 }

@@ -21,7 +21,7 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
-        
+
         $fields = $request->only(['email', 'password']);
 
         try {

@@ -16,16 +16,21 @@ use App\Models\User;
 */
 
 $router->get('/', function () use ($router) {
-    //User::factory()->create(['email' => 'mail@mail.com']);
+    User::factory()->create(['email' => 'mail@mail.com']);
     return $router->app->version();
 });
 
 $router->post('/auth/{provider}', [
-    'as' => 'authenticate', 
+    'as' => 'authenticate',
     'uses' => 'AuthController@postAuthenticate'
 ]);
 
 $router->get('/users/me', [
-    'as' => 'usersMe', 
+    'as' => 'usersMe',
     'uses' => 'MeController@getMe'
+]);
+
+$router->post('/transactions', [
+    'as' => 'postTransaction',
+    'uses' => 'Transactions\TransactionsController@postTransaction'
 ]);
