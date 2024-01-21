@@ -26,7 +26,7 @@ class RetailerFactory extends Factory
             'id' => $this->faker->uuid,
             'name' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail,
-            'document_id' => 99999999,
+            'document_id' => $this->faker->randomNumber(7, true),
             'password' => Hash::make('admin')
         ];
     }

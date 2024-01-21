@@ -2,27 +2,33 @@
 
 namespace App\Repositories\Transaction;
 
+use App\Exceptions\NotEnoughMoney;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use PHPUnit\Framework\InvalidDataProviderException;
 use App\Models\Retailer;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Exceptions\TransactionDeniedException;
 
 class TransactionRepository
 {
     public function handle(array $data): array
     {
         if (!$this->guardCanTransfer()) {
-            throw new \Exception("Retailer is not authorized to make transactions", 401);
+            throw new TransactionDeniedException("Retailer is not authorized to make transactions", 401);
         }
 
         $model = $this->getProvider($data['provider']);
 
         $user = $model->findOrFail($data['payee_id']);
 
-        $user->wallet->transaction()->create([
+        if (!$this->checkUserBalance($user, $data['amount'])) {
+            throw new NotEnoughMoney("There is not enough money for this transaction", 422);
+        }
 
-        ]);
+        // $user->wallet->transaction()->create([
+
+        // ]);
 
         return [];
     }
@@ -47,5 +53,10 @@ class TransactionRepository
         } else {
             throw new InvalidDataProviderException("Provider not found");
         }
+    }
+
+    private function checkUserBalance($user, $money): bool
+    {
+        return $user->wallet->balance >= $money;
     }
 }

@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Repositories\Transaction\TransactionRepository;
 use Illuminate\Http\Request;
 use PHPUnit\Framework\InvalidDataProviderException;
+use App\Exceptions\TransactionDeniedException;
+use App\Exceptions\NotEnoughMoney;
 
 class TransactionsController extends Controller
 {
@@ -26,9 +28,9 @@ class TransactionsController extends Controller
 
         try {
             $result = $this->repository->handle($fields);
-        } catch (InvalidDataProviderException $exception) {
+        } catch (InvalidDataProviderException | NotEnoughMoney $exception) {
             return response()->json(['errors' => ['main' => $exception->getMessage()]], 422);
-        } catch (\Exception $exception) {
+        } catch (TransactionDeniedException $exception) {
             return response()->json(['errors'=> ['main'=> $exception->getMessage()]], 401);
         }
 

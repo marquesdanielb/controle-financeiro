@@ -84,4 +84,21 @@ class TransactionControllerTest extends TestCase
 
         $request->assertResponseStatus(401);
     }
+
+    public function testUserShouldHaveMoneyToPerformSomeTransaction()
+    {
+        $this->artisan('passport:install');
+        $userPayer = User::factory()->create();
+        $userPayed = User::factory()->create();
+        $payload = [
+            'provider' => 'user',
+            'payee_id' => $userPayed->id,
+            'amount' => 500
+        ];
+
+        $request = $this->actingAs($userPayer, 'users')
+            ->post(route('postTransaction'), $payload);
+
+        $request->assertResponseStatus(422);
+    }
 }
