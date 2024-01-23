@@ -36,12 +36,12 @@ class AuthRepository
 
     public function getProvider(string $provider): AuthenticatableContract
     {
-        if ($provider == "user") {
+        if ($provider == 'users') {
             return new User();
-        } else if ($provider == "retailer") {
+        } else if ($provider == 'retailers') {
             return new Retailer();
         } else {
-            throw new InvalidDataProviderException("Provider not found");
+            throw new InvalidDataProviderException('Provider not found');
         }
     }
 }

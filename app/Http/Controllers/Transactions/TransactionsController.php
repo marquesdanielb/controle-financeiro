@@ -19,7 +19,7 @@ class TransactionsController extends Controller
     public function postTransaction(Request $request)
     {
         $this->validate($request, [
-            "provider"=> "required|in:user,retailer",
+            "provider"=> "required|in:users,retailers",
             "payee_id"=> "required",
             "amount"=> "required|numeric",
         ]);
@@ -28,12 +28,13 @@ class TransactionsController extends Controller
 
         try {
             $result = $this->repository->handle($fields);
+            return response()->json($result);
         } catch (InvalidDataProviderException | NotEnoughMoney $exception) {
-            return response()->json(['errors' => ['main' => $exception->getMessage()]], 422);
+        return response()->json(['errors' => ['main' => $exception->getMessage()]], 422);
         } catch (TransactionDeniedException $exception) {
             return response()->json(['errors'=> ['main'=> $exception->getMessage()]], 401);
+        } catch (\Exception $exception) {
+            dd($exception->getMessage());
         }
-
-        return response()->json($result);
     }
 }

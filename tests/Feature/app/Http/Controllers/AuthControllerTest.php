@@ -35,7 +35,7 @@ class AuthControllerTest extends TestCase
             'password' => 'admin',
         ];
 
-        $request = $this->post(route('authenticate', ['provider' => 'user']), $payload);
+        $request = $this->post(route('authenticate', ['provider' => 'users']), $payload);
         $request->assertResponseStatus(401);
         $request->seeJson(['errors' => ['main' => 'Not authorized - Wrong credentials']]);
     }
@@ -48,7 +48,7 @@ class AuthControllerTest extends TestCase
             'password' => 'userpassword',
         ];
 
-        $request = $this->post(route('authenticate', ['provider' => 'user']), $payload);
+        $request = $this->post(route('authenticate', ['provider' => 'users']), $payload);
         $request->assertResponseStatus(401);
         $request->seeJson(['errors' => ['main' => 'Not authorized - Wrong credentials']]);
     }
@@ -62,7 +62,7 @@ class AuthControllerTest extends TestCase
             'password' => 'admin',
         ];
 
-        $request = $this->post(route('authenticate', ['provider' => 'user']), $payload);
+        $request = $this->post(route('authenticate', ['provider' => 'users']), $payload);
         $request->assertResponseStatus(200);
         $request->seeJsonStructure(['access_token', 'expires_at', 'provider']);
     }
