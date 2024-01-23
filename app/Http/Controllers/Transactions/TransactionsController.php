@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Transactions;
 
+use App\Exceptions\IdleServiceException;
 use App\Http\Controllers\Controller;
 use App\Repositories\Transaction\TransactionRepository;
 use Illuminate\Http\Request;
 use PHPUnit\Framework\InvalidDataProviderException;
 use App\Exceptions\TransactionDeniedException;
 use App\Exceptions\NotEnoughMoney;
+use Illuminate\Support\Facades\Log;
 
 class TransactionsController extends Controller
 {
@@ -31,10 +33,12 @@ class TransactionsController extends Controller
             return response()->json($result);
         } catch (InvalidDataProviderException | NotEnoughMoney $exception) {
         return response()->json(['errors' => ['main' => $exception->getMessage()]], 422);
-        } catch (TransactionDeniedException $exception) {
+        } catch (TransactionDeniedException | IdleServiceException $exception) {
             return response()->json(['errors'=> ['main'=> $exception->getMessage()]], 401);
         } catch (\Exception $exception) {
-            dd($exception->getMessage());
+            Log::critical('[Transaction goes bad, please contact your manager]', [
+                'message' => $exception->getMessage()
+            ]);
         }
     }
 }

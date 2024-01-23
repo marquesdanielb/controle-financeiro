@@ -2,6 +2,7 @@
 
 namespace Feature\app\Http\Controllers;
 
+use App\Events\SendNotification;
 use App\Models\Retailer;
 use Laravel\Lumen\Testing\TestCase;
 use Laravel\Lumen\Testing\DatabaseMigrations;
@@ -104,6 +105,7 @@ class TransactionControllerTest extends TestCase
 
     public function testUserCanTransferMoney()
     {
+        $this->expectsEvents(SendNotification::class);
         $this->artisan('passport:install');
         $userPayer = User::factory()->create();
         $userPayer->wallet->deposit(1000);
@@ -123,6 +125,7 @@ class TransactionControllerTest extends TestCase
             'id' => $userPayer->wallet->id,
             'balance' => 500
         ]);
+
         $request->seeInDatabase('wallets', [
             'id' => $userPayed->wallet->id,
             'balance' => 500

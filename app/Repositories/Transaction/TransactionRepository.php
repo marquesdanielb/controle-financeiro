@@ -2,6 +2,8 @@
 
 namespace App\Repositories\Transaction;
 
+use App\Events\SendNotification;
+use App\Exceptions\IdleServiceException;
 use App\Exceptions\NotEnoughMoney;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use PHPUnit\Framework\InvalidDataProviderException;
@@ -11,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Exceptions\TransactionDeniedException;
 use App\Models\Transactions\Transaction;
 use App\Models\Transactions\Wallet;
+use App\Services\MockyService;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
 
@@ -23,12 +26,16 @@ class TransactionRepository
         }
 
         if (!$payee = $this->retrivePayee($data)) {
-            throw new InvalidDataProviderException('Provider Not found');
+            throw new InvalidDataProviderException('User Not Found');
         }
 
         $myWallet = Auth::guard($data['provider'])->user()->wallet;
         if (!$this->checkUserBalance($myWallet, $data['amount'])) {
             throw new NotEnoughMoney('There is not enough money for this transaction', 422);
+        }
+
+        if (!$this->isServiceAbleToMakeTransaction()) {
+            throw new IdleServiceException('Service\'s not responding');
         }
 
         return $this->makeTransaction($payee, $data);
@@ -76,6 +83,8 @@ class TransactionRepository
             $transaction->walletPayer->withdraw($payload['amount']);
             $transaction->walletPayee->deposit($payload['amount']);
 
+            event(new SendNotification($transaction));
+
             return $transaction;
         });
     }
@@ -91,9 +100,15 @@ class TransactionRepository
     {
         try {
             $model = $this->getProvider($data['provider']);
-            return $model->findOrFail($data['payee_id']);
+            return $model->find($data['payee_id']);
         } catch (InvalidDataProviderException | \Exception $e) {
             return false;
         }
+    }
+
+    private function isServiceAbleToMakeTransaction(): bool
+    {
+        $service = app(MockyService::class)->authorizeTransaction();
+        return $service['message'] == 'Autorizado';
     }
 }
