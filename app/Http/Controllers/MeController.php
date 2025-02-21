@@ -16,4 +16,9 @@ class MeController extends Controller
     {
         return response()->json(Auth::guard('users')->user());
     }
+
+    public function getConnection()
+    {
+        
+    }
 }
